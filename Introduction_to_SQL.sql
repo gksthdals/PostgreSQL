@@ -107,8 +107,6 @@ SELECT name
 FROM instructor
 WHERE name like '%dar%';
 
-like '100\%' escape '\' /* 100%와 match시킬 때 */
-
 /* Ordering the Display of Tuples */
 SELECT DISTINCT name
 FROM instructor
