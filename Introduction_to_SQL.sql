@@ -1,11 +1,4 @@
 /* Create Table Construct */
-create table instructor (
-    ID              char(5),
-    name            varchar(20),
-    dept_name       varchar(20),
-    salary          numeric(8,2)
-);
-
 /* Integrity Constraints in Create Table
 
 primary key (A1, A2, ... , An)
@@ -13,6 +6,13 @@ foreign key (Am, ... , An) references r
 not null
 
 */
+
+create table instructor (
+    ID              char(5),
+    name            varchar(20),
+    dept_name       varchar(20),
+    salary          numeric(8,2)
+);
 
 create table instructor (
     ID              char(5),
@@ -200,7 +200,7 @@ SELECT COUNT (DISTINCT ID)
 FROM takes
 WHERE (course_id, sec_id, semester, year) in (SELECT course_id, sec_id, semester, year
                                               FROM teaches
-                                              WHERE teaches.ID = 10101);
+                                              WHERE teaches.ID = '10101');
 
 /* Set Comparison */
 /* "some" Clause */
@@ -228,12 +228,12 @@ WHERE salary > all (SELECT salary
 SELECT course_id
 FROM section as S
 WHERE semester = 'Fall' and year = 2017 and exists (SELECT *
-                                                    FROM section as Table
-                                                    WHERE semester = 'Spring' and year = 2018 and S.course_id = T.course_id)
+                                                    FROM section as T
+                                                    WHERE semester = 'Spring' and year = 2018 and S.course_id = T.course_id);
 
 /* not exists */
 'Find all students who have taken all courses offered in the Biology department'
-SELECT DISTINCT S.ID S.name
+SELECT DISTINCT S.ID, S.name
 FROM student as S
 WHERE not exists ((SELECT course_id
                    FROM course
@@ -249,14 +249,14 @@ SELECT T.course_id
 FROM course as T
 WHERE unique (SELECT R.course_id
               FROM section as R
-              WHERE T.coursed_id = R.course_id and R.year = 2017);
+              WHERE T.course_id = R.course_id and R.year = 2017);
 
 /* Subqueries in the Form Clause */
 "Find the average instructors' salaries of those department where the average salary is greater than $42000"
 SELECT dept_name, avg_salary
 FROM (SELECT dept_name, avg(salary) as avg_salary
       FROM instructor
-      GROUP BY dept_name)
+      GROUP BY dept_name) as foo
 WHERE avg_salary > 42000;
 
 /* With Clause */
@@ -264,8 +264,8 @@ WHERE avg_salary > 42000;
 with max_budget (value) as
     (select max(budget)
      from department)
-select department.name
-from departmentm, max_budget
+select department.dept_name
+from department, max_budget
 where department.budget = max_budget.value;
 
 /* Complex Queries using With Clause */
@@ -315,7 +315,7 @@ insert into course values ('CS-437', 'Database Systems', 'Comp. Sci.', 4);
 insert into instructor
     select ID, name, dept_name, 18000
     from student
-    where dept_name = 'Music' and total_cred > 144;
+    where dept_name = 'Music' and tot_cred > 144;
 
 /* Updates */
 'Give a 5% salary raise to all instructors'
@@ -344,4 +344,4 @@ update instructor
 update student S
 set tot_cred = (select sum(credits)
                 from takes, course
-                where takes.course_id = course.course_id and S.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null)
+                where takes.course_id = course.course_id and S.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);
